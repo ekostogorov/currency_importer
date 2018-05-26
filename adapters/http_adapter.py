@@ -11,6 +11,7 @@ class HTTP_Adapter(object):
 
   def load(self):
     url = self.__build_url__()
+    print("URL", url)
     r = requests.get(url)
     if r.status_code == 200:
       json_data = r.json()
@@ -20,4 +21,4 @@ class HTTP_Adapter(object):
       
 
   def __build_url__(self):
-    return self.url + "?access_token=" + self.token + "&format=1"
+    return self.url + "?access_key=" + self.token + "&format=1"

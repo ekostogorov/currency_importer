@@ -1,8 +1,9 @@
-from http_adapter import HTTP_Adapter
-from pg_adapter import PG_Adapter
+from adapters.http_adapter import HTTP_Adapter
+from adapters.mysql_adapter import MySQL_Adapter
+import config
 
 class App(object):
-  pg_adapter = None
+  mysql_adapter = None
   http_adapter = None
   config = None
   
@@ -12,11 +13,12 @@ class App(object):
       self.config.API_URL,
       self.config.ACCESS_TOKEN
     )
-    self.pg_adapter = PG_Adapter(
+    self.pg_adapter = MySQL_Adapter(
       self.config.HOST,
       self.config.PORT,
       self.config.USER,
-      self.config.PASSWORD
+      self.config.PASSWORD,
+      self.config.DB
     )
   
   def start(self):
@@ -25,4 +27,18 @@ class App(object):
     return self.pg_adapter.save(mapped_data)
 
   def __map__(self, data):
-    return data
+    cur_dict = {}
+    if "currencies" in data:
+      for k, v in data['currencies'].items():
+        name = k.replace("ʻ", "")
+        code = v.replace("ʻ", "")
+        cur_dict[name] = code
+      return cur_dict
+    else:
+      print("No data")
+
+def run():
+  app = App(config)
+  app.start()
+
+run()
